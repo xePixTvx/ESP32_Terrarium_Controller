@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <SHT31.h>
 
 #if DISABLE_UI_AND_TOUCH != 1
 #include <lvgl.h>
@@ -16,7 +17,7 @@ class SensorUpdater
 {
 
 	public:
-		SensorUpdater(DallasTemperature*);
+		SensorUpdater(DallasTemperature*, SHT31*);
 		void Begin();
 		void Start();
 		void Pause();
@@ -30,6 +31,10 @@ class SensorUpdater
 		//Controller Temp
 		float GetControllerTemp();
 
+		//SHT Temp & Humidity Sensor
+		float GetTerrariumTemp();
+		float GetTerrariumHumidity();
+
 
 	private:
 		bool IsPaused = false;
@@ -41,10 +46,17 @@ class SensorUpdater
 		bool IsControllerDoorOpened = false;
 		void UpdateControllerDoorOpened();
 
-
 		//Controller Temp
 		DallasTemperature* TempSensors;
 		char controllerTemp_label_buffer[6];
 		float ControllerTemp = 0.0;
 		void UpdateOneWireTempSensors();
+
+		//SHT Temp & Humidity Sensor
+		SHT31* ShtSensor;
+		char terrariumTemp_label_buffer[6];
+		char terrariumHumidity_label_buffer[6];
+		float TerrariumTemp = 0.0;
+		float TerrariumHumidity = 0.0;
+		void UpdateShtTempHumiditySensor();
 };

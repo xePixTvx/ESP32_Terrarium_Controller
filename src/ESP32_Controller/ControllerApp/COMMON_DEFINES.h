@@ -10,9 +10,6 @@
 //0 = USE UI & Touch ----- 1 = Disable UI & Touch(for testing sensors etc......)
 #define DISABLE_UI_AND_TOUCH 0
 
-//0 = USE EEZ UI ----- 1 = USE LVGL TEST UI
-#define LVGL_UI_TESTING 0
-
 //Update Sensors Time  ------  1000 = 1sec
 #define UPDATE_SENSORS_DELAY 1000
 
@@ -73,6 +70,9 @@ BLUE = SD_CS = GPIO5                ---- DONE
 SCL = GPIO22
 SDA = GPIO21
 ****************************************/
+#define I2C_SCL_PIN 22
+#define I2C_SDA_PIN 21
+#define SHTSENSOR_ADDRESS 0x44
 
 
 /********************************** ONE WIRE BUS

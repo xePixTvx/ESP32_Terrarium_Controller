@@ -1,9 +1,10 @@
 #include "SensorUpdater.h"
 
 //Constructor
-SensorUpdater::SensorUpdater(DallasTemperature* oneWireTempSensors)
+SensorUpdater::SensorUpdater(DallasTemperature* oneWireTempSensors, SHT31* shtSensor)
 {
     TempSensors = oneWireTempSensors;
+    ShtSensor = shtSensor;
 }
 
 
@@ -17,6 +18,9 @@ void SensorUpdater::Begin()
 
     //Init OneWire Temp Sensors
     TempSensors->begin();
+
+    //Init SHT Sensor
+    ShtSensor->begin();
 }
 
 
@@ -68,6 +72,9 @@ void SensorUpdater::Update()
             //Update One Wire Bus Temp Sensors
             UpdateOneWireTempSensors();
 
+            //Update SHT Temp & Humidity Sensor
+            UpdateShtTempHumiditySensor();
+
 
 
             //DEV Print Time between Updates
@@ -90,7 +97,7 @@ void SensorUpdater::Update()
 
 
 
-
+//Controller Door Sensor
 void SensorUpdater::UpdateControllerDoorOpened()
 {
     int pinValue = analogRead(CONTROLLER_DOOR_PIN);
@@ -100,9 +107,7 @@ void SensorUpdater::UpdateControllerDoorOpened()
         IsControllerDoorOpened = true;
         //Serial.println("Controller Door is now Opened!");
         #if DISABLE_UI_AND_TOUCH != 1
-            #if LVGL_UI_TESTING != 1
-                lv_obj_clear_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Show Door Opened Img
-            #endif
+            lv_obj_clear_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Show Door Opened Img
         #endif
     }
     else if ((pinValue < 3700) && IsControllerDoorOpened)
@@ -110,9 +115,7 @@ void SensorUpdater::UpdateControllerDoorOpened()
         IsControllerDoorOpened = false;
         //Serial.println("Controller Door is now Closed!");
         #if DISABLE_UI_AND_TOUCH != 1
-            #if LVGL_UI_TESTING != 1
-                lv_obj_add_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Hide Door Opened Img
-            #endif
+            lv_obj_add_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Hide Door Opened Img
         #endif
     }
     else {}
@@ -127,7 +130,7 @@ bool SensorUpdater::GetControllerDoorOpened()
 
 
 
-
+//Controller Temp Sensor
 void SensorUpdater::UpdateOneWireTempSensors()
 {
     //Read Temps
@@ -135,33 +138,93 @@ void SensorUpdater::UpdateOneWireTempSensors()
     ControllerTemp = TempSensors->getTempCByIndex(0);
 
     #if DISABLE_UI_AND_TOUCH != 1
-        #if LVGL_UI_TESTING != 1
-            if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
+        if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
+        {
+            int valueDegree = 0;
+            if ((ControllerTemp != -127) && (ControllerTemp >= 0) && (ControllerTemp <= 100))
             {
-                if ((ControllerTemp != -127) && (ControllerTemp >= 0) && (ControllerTemp <= 100))
-                {
-                    //BAR = objects.controller_temp_widget_temp_value
-
-                    //LVGL Labels info: https://docs.lvgl.io/master/details/widgets/label.html
-
-                    String tempStr = String(ControllerTemp) + "C" + DEGREE_SYMBOL_UTF8;
-                    strcpy(controllerTemp_label_buffer, tempStr.c_str());
-                    lv_label_set_text(objects.controller_temp_widget_temp_label, controllerTemp_label_buffer);
-                    lv_bar_set_value(objects.controller_temp_widget_temp_value, 80, LV_ANIM_ON);
-                }
-                else
-                {
-                    String tempStr = "0C" + DEGREE_SYMBOL_UTF8;
-                    strcpy(controllerTemp_label_buffer, tempStr.c_str());
-                    lv_label_set_text(objects.controller_temp_widget_temp_label, controllerTemp_label_buffer);
-                    lv_bar_set_value(objects.controller_temp_widget_temp_value, 0, LV_ANIM_ON);
-                }
+                valueDegree = static_cast<int>(round(ControllerTemp));
             }
-        #endif
+            else
+            {
+                ControllerTemp = 0.0;
+                valueDegree = 0;
+            }
+
+            String tempStr = String(valueDegree) + "C" + DEGREE_SYMBOL_UTF8;
+            strcpy(controllerTemp_label_buffer, tempStr.c_str());
+            lv_label_set_text(objects.controller_temp_widget_temp_label, controllerTemp_label_buffer);
+            lv_bar_set_value(objects.controller_temp_widget_temp_value, valueDegree, LV_ANIM_ON);
+        }
     #endif
 }
 
 float SensorUpdater::GetControllerTemp()
 {
     return ControllerTemp;
+}
+
+
+
+
+
+
+//SHT Temp & Humidity Sensor
+void SensorUpdater::UpdateShtTempHumiditySensor()
+{
+    //Update Readings
+    ShtSensor->read();
+    TerrariumTemp = ShtSensor->getTemperature();
+    TerrariumHumidity = ShtSensor->getHumidity();
+    //Serial.println("Temp: " + String(TerrariumTemp));
+    //Serial.println("Humid: " + String(TerrariumHumidity));
+
+
+    #if DISABLE_UI_AND_TOUCH != 1
+        if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
+        {
+            //Temp
+            int valueDegree = 0;
+            if ((TerrariumTemp != -45) && (TerrariumTemp >= 0) && (TerrariumTemp <= 100))
+            {
+                valueDegree = static_cast<int>(round(TerrariumTemp));
+            }
+            else
+            {
+                TerrariumTemp = 0.0;
+                valueDegree = 0;
+            }
+            String tempStr = String(valueDegree) + "C" + DEGREE_SYMBOL_UTF8;
+            strcpy(terrariumTemp_label_buffer, tempStr.c_str());
+            lv_label_set_text(objects.terrarium_air_temp_value, terrariumTemp_label_buffer);
+            lv_bar_set_value(objects.terrarium_air_temp_bar, valueDegree, LV_ANIM_ON);
+
+
+            //Humidity
+            int valueHum = 0;
+            if ((TerrariumHumidity >= 0) && (TerrariumHumidity <= 100))
+            {
+                valueHum = static_cast<int>(round(TerrariumHumidity));
+            }
+            else
+            {
+                TerrariumHumidity = 0.0;
+                valueHum = 0;
+            }
+            String humidStr = String(valueHum) + "%";
+            strcpy(terrariumHumidity_label_buffer, humidStr.c_str());
+            lv_label_set_text(objects.terrarium_humidity_value, terrariumHumidity_label_buffer);
+            lv_bar_set_value(objects.terrarium_humidity_bar, valueHum, LV_ANIM_ON);
+        }
+    #endif
+}
+
+float SensorUpdater::GetTerrariumTemp()
+{
+    return TerrariumTemp;
+}
+
+float SensorUpdater::GetTerrariumHumidity()
+{
+    return TerrariumHumidity;
 }

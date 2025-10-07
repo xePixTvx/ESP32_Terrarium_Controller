@@ -46,7 +46,7 @@ void create_screen_info_screen() {
                     // TerrariumAirTempValue
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.terrarium_air_temp_value = obj;
-                    lv_obj_set_pos(obj, 55, 17);
+                    lv_obj_set_pos(obj, 57, 17);
                     lv_obj_set_size(obj, 34, 11);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_align(obj, LV_ALIGN_TOP_MID, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -110,12 +110,12 @@ void create_screen_info_screen() {
                     // TerrariumHumidityValue
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     objects.terrarium_humidity_value = obj;
-                    lv_obj_set_pos(obj, 55, 29);
+                    lv_obj_set_pos(obj, 55, 28);
                     lv_obj_set_size(obj, 34, 11);
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_align(obj, LV_ALIGN_TOP_MID, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "100C°");
+                    lv_label_set_text(obj, "100%");
                 }
                 {
                     lv_obj_t *obj = lv_label_create(parent_obj);
@@ -148,7 +148,7 @@ void create_screen_info_screen() {
                     lv_obj_set_style_text_align(obj, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_align(obj, LV_ALIGN_TOP_MID, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_10, LV_PART_MAIN | LV_STATE_DEFAULT);
-                    lv_label_set_text(obj, "100C°");
+                    lv_label_set_text(obj, "100%");
                 }
             }
         }

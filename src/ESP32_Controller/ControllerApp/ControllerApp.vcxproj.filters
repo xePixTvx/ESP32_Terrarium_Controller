@@ -13,47 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>xml;json;txt;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ui">
-      <UniqueIdentifier>{5f74debd-853b-4c95-ae33-707c5b0fdac6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ControllerApp.ino" />
-    <ClCompile Include="SdControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FanControl.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="images.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="screens.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="styles.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_image_icon_fan.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_image_icon_menu_pressed.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_image_icon_menu_released.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_image_icon_door_opened.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_font_font_capture.c">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="ui_font_font_cleanwork_tiny.c">
-      <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="SensorUpdater.cpp">
       <Filter>Source Files</Filter>
@@ -63,38 +27,11 @@
     <ClInclude Include="__vm\.ControllerApp.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SdControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="COMMON_DEFINES.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FanControl.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="actions.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="fonts.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="images.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="screens.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="structs.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="styles.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="ui.h">
-      <Filter>ui</Filter>
-    </ClInclude>
-    <ClInclude Include="vars.h">
-      <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="SensorUpdater.h">
       <Filter>Header Files</Filter>

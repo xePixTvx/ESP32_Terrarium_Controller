@@ -6,13 +6,6 @@
 #include <DallasTemperature.h>
 #include <SHT31.h>
 
-#if DISABLE_UI_AND_TOUCH != 1
-#include <lvgl.h>
-#include <TFT_eSPI.h>
-#include <XPT2046_Touchscreen.h>
-#include "ui.h"
-#endif
-
 class SensorUpdater
 {
 
@@ -40,7 +33,7 @@ class SensorUpdater
 		bool IsPaused = false;
 		unsigned long timeLastUpdate = 0;
 
-		const String DEGREE_SYMBOL_UTF8 = "\xc2\xb0";
+		//const String DEGREE_SYMBOL_UTF8 = "\xc2\xb0";//////NEEDED??????????????????????
 
 		//Controller Door Opened
 		bool IsControllerDoorOpened = false;

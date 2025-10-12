@@ -4,7 +4,7 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: WIFI Stuff
+//LAST WORKED ON: WIFI Stuff ----- Not going to use wifi cause its a bitch
 
 
 
@@ -18,7 +18,7 @@
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- Needs Testing
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
 *                   Terrarium Light & Heater                -------------------------------- NOT STARTED
-*                   WIFI & Clock                            -------------------------------- NOT STARTED
+*                   RTC(DS3231)                             -------------------------------- NOT STARTED
 */
 #include "COMMON_DEFINES.h"
 
@@ -29,7 +29,6 @@
 #include <SHT31.h>
 
 #include "SensorUpdater.h"
-
 
 
 //Update Task Delay Setting

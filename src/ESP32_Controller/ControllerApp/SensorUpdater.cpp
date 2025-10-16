@@ -78,7 +78,7 @@ void SensorUpdater::Update()
 
 
             //DEV Print Time between Updates(sensor reading delay is currently 752ms)
-            Serial.println("Sensor Updater: TICK:    " + String((millis() - timeLastUpdate)));
+            //Serial.println("Sensor Updater: TICK:    " + String((millis() - timeLastUpdate)));
 
             //Update last Update Time
             timeLastUpdate = millis();
@@ -176,14 +176,21 @@ float SensorUpdater::GetControllerTemp()
 //SHT Temp & Humidity Sensor
 void SensorUpdater::UpdateShtTempHumiditySensor()
 {
-    //Update Readings
-    ShtSensor->read();
-    TerrariumTemp = ShtSensor->getTemperature();
-    TerrariumHumidity = ShtSensor->getHumidity();
-    //Serial.println("Temp: " + String(TerrariumTemp));
-    //Serial.println("Humid: " + String(TerrariumHumidity));
+    if (ShtSensor->isConnected())
+    {
+        //Update Readings
+        ShtSensor->read();
+        TerrariumTemp = ShtSensor->getTemperature();
+        TerrariumHumidity = ShtSensor->getHumidity();
+        //Serial.println("Temp: " + String(TerrariumTemp));
+        //Serial.println("Humid: " + String(TerrariumHumidity));
 
-    if ((TerrariumTemp == -45) || (TerrariumTemp <= 0) || (TerrariumTemp >= 100))
+        if ((TerrariumTemp == -45) || (TerrariumTemp <= 0) || (TerrariumTemp >= 100))
+        {
+            TerrariumTemp = 0.0;
+        }
+    }
+    else
     {
         TerrariumTemp = 0.0;
     }

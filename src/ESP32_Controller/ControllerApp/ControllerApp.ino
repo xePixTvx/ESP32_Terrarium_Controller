@@ -4,7 +4,7 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: WIFI Stuff ----- Not going to use wifi cause its a bitch
+//LAST WORKED ON: RTC Testing
 
 
 
@@ -18,7 +18,8 @@
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- Needs Testing
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
 *                   Terrarium Light & Heater                -------------------------------- NOT STARTED
-*                   RTC(DS3231)                             -------------------------------- NOT STARTED
+*                   RTC(DS3231)                             -------------------------------- WIP
+*                   ESP_NOW                                 -------------------------------- NOT STARTED
 */
 #include "COMMON_DEFINES.h"
 
@@ -28,7 +29,10 @@
 #include <DallasTemperature.h>
 #include <SHT31.h>
 
+
+
 #include "SensorUpdater.h"
+#include "ClockControl.h"
 
 
 //Update Task Delay Setting
@@ -44,6 +48,9 @@ SHT31 ShtSensor;
 //Sensor Updater
 SensorUpdater SensorUpd = SensorUpdater(&OneWireTempSensors, &ShtSensor);
 
+//Clock Controller
+ClockControl ClockCtrl = ClockControl();
+
 
 void setup()
 {
@@ -57,6 +64,10 @@ void setup()
     digitalWrite(TFT_DISPLAY_TOUCH_CS_PIN, HIGH); // Touch controller chip select (if used)
     digitalWrite(TFT_DISPLAY_CS_PIN, HIGH); // TFT screen chip select
     digitalWrite(SD_CARD_CS_PIN, HIGH); // SD card chips select, must use GPIO 5 (ESP32 SS)
+    delay(200);
+
+    //Init Clock Controller
+    ClockCtrl.Begin();
     delay(200);
 
     //Create UpdaterTask
@@ -79,11 +90,21 @@ void setup()
 //MAIN LOOP
 void loop()
 {
+    ClockCtrl.Update();
+
+
     if (!AllowUpdaterTask && (millis() >= UPDATE_TASK_START_DELAY))
     {
         SensorUpd.Start();
         AllowUpdaterTask = true;
     }
+
+    if (ClockCtrl.IsGuiUpdateNeeded())
+    {
+        Serial.println("Clock Gui Update");
+        ClockCtrl.GuiUpdateDone();
+    }
+
 }
 
 

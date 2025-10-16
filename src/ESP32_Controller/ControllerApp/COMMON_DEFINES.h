@@ -66,7 +66,7 @@ PIN = GPIO13
 
 
 /********************************** CONTROLLER DOOR OPENED SWITCH
-PIN = GPIO14
+PIN = GPIO14 
 ****************************************/
 #define CONTROLLER_DOOR_PIN 14
 

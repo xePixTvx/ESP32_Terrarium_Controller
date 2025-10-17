@@ -11,6 +11,7 @@ typedef struct _objects_t {
     lv_obj_t *info_screen;
     lv_obj_t *menu_main;
     lv_obj_t *menu_dev;
+    lv_obj_t *menu_settings_time_ndate;
     lv_obj_t *terrarium_info_widget;
     lv_obj_t *terrarium_air_temp_value;
     lv_obj_t *terrarium_air_temp_bar;
@@ -37,6 +38,10 @@ typedef struct _objects_t {
     lv_obj_t *menu_main_title_1;
     lv_obj_t *menu_dev_opt1;
     lv_obj_t *button_back_menu_dev;
+    lv_obj_t *menu_main_title_2;
+    lv_obj_t *menu_time_ndate_cancel;
+    lv_obj_t *menu_time_ndate_save;
+    lv_obj_t *test_roller;
 } objects_t;
 
 extern objects_t objects;
@@ -45,6 +50,7 @@ enum ScreensEnum {
     SCREEN_ID_INFO_SCREEN = 1,
     SCREEN_ID_MENU_MAIN = 2,
     SCREEN_ID_MENU_DEV = 3,
+    SCREEN_ID_MENU_SETTINGS_TIME_NDATE = 4,
 };
 
 void create_screen_info_screen();
@@ -55,6 +61,9 @@ void tick_screen_menu_main();
 
 void create_screen_menu_dev();
 void tick_screen_menu_dev();
+
+void create_screen_menu_settings_time_ndate();
+void tick_screen_menu_settings_time_ndate();
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

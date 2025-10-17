@@ -5,9 +5,12 @@
 //ERASE FLASH CMD = python -m esptool --chip esp32 erase_flash
 
 
-
-
 /************************************************COMMON DEFINES***************************************************/
+
+//Disable GUI & Touchscreen
+#define DISABLE_UI_AND_TOUCH false
+
+
 
 //Update Sensors Time  ------  1000 = 1sec
 #define UPDATE_SENSORS_DELAY 1000
@@ -26,6 +29,46 @@
 
 
 /*****************************************************************************************************************/
+
+
+
+
+
+
+
+/*****************************************************TFT DISPLAY PIN DEFINES********************************************/
+
+/*** DONT CHANGE ANY PINs without RESOLDER ***/
+
+/********************************** TFT DISPLAY
+//Common
+RED = 3.3V                          ---- DONE
+BLACK = GND                         ---- DONE
+PURPLE = CS = GPIO15                ---- DONE
+BLUE = RESET = GPIO4                ---- DONE
+GREEN = DC = GPIO2                  ---- DONE
+WHITE = SDI/MOSI/COPI = GPIO23      ---- DONE
+YELLOW = SCK = GPIO18               ---- DONE
+GREY = SDO/MISO/CIPO = GPIO19       ---- DONE
+
+//Touch
+ORANGE = T_CS = GPIO17              ---- DONE
+BROWN = T_IRQ = NOT NEEDED
+
+//SD Card
+BLUE = SD_CS = GPIO5                ---- DONE ---- NOT USED
+****************************************/
+#define TFT_DISPLAY_CS_PIN 15// DISPLAY
+#define TFT_DISPLAY_TOUCH_CS_PIN 17 // DISPLAY TOUCH
+#define TFT_DISPLAY_SCK 18
+#define TFT_DISPLAY_MISO 19
+#define TFT_DISPLAY_MOSI 23
+
+#define SD_CARD_CS_PIN 5 // SD CARD READER --- NOT USED
+
+/*****************************************************************************************************************/
+
+
 
 
 

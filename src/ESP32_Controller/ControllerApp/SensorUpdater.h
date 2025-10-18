@@ -6,6 +6,9 @@
 #include <DallasTemperature.h>
 #include <SHT31.h>
 
+#include <lvgl.h>
+#include "ui.h"
+
 class SensorUpdater
 {
 
@@ -33,7 +36,7 @@ class SensorUpdater
 		bool IsPaused = false;
 		unsigned long timeLastUpdate = 0;
 
-		//const String DEGREE_SYMBOL_UTF8 = "\xc2\xb0";//////NEEDED??????????????????????
+		const String DEGREE_SYMBOL_UTF8 = "\xc2\xb0";
 
 		//Controller Door Opened
 		bool IsControllerDoorOpened = false;

@@ -1,38 +1,9 @@
 #include "ClockControl.h"
 
-/*
-DateTime now = rtc.now();
-
-    Serial.print(now.year(), DEC);
-    Serial.print('/');
-    Serial.print(now.month(), DEC);
-    Serial.print('/');
-    Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
-
-    Serial.println();
-    delay(3000);
-*/
-
-
-
-
-
 //Constructor
 ClockControl::ClockControl()
 {
 }
-
-
-
 
 
 void ClockControl::Begin()
@@ -51,17 +22,17 @@ void ClockControl::Begin()
     {
         SetTimeAndDate(2000, 1, 1, 20, 15, 0);//01.01.2000 @ 20:15:00
     }
-
-    //Force Reset Time & Date
-    //SetTimeAndDate(2000, 1, 1, 20, 15, 0);//01.01.2000 @ 20:15:00
-    //RTC_Device.adjust(DateTime(F(__DATE__), F(__TIME__)));//Set to Compile DateTime
 }
 
 
 void ClockControl::SetTimeAndDate(int year, int month, int day, int hour, int minute, int second)
 {
-    Serial.println("ReAdjusted RTC Date & Time!");
+    //Serial.println("ReAdjusted RTC Date & Time!");
     RTC_Device.adjust(DateTime(year, month, day, hour, minute, second));
+    DateTime now = GetDateTime();
+    SecondsAtLastUpdate = now.second();
+    SecondsSinceLastUpdate = SecondsAtLastUpdate;
+    UpdateClockGui(now);
 }
 
 
@@ -76,13 +47,43 @@ void ClockControl::Update()
         //Serial.println("Seconds Since Last Update: " + String(SecondsSinceLastUpdate));
     }
 
-    if ((SecondsSinceLastUpdate >= 60) && !GuiNeedsUpdate)
+    if ((SecondsSinceLastUpdate >= 60))
     {
-        GuiNeedsUpdate = true;
+        UpdateClockGui(now);
+        SecondsSinceLastUpdate = 0;
     }
+}
 
 
-    //TestClock();
+
+
+void ClockControl::UpdateClockGui(DateTime now)
+{
+    //Day Name
+    String temp_dayName = weekDayNames[now.dayOfTheWeek()];
+    strcpy(dayLabelBuffer, temp_dayName.c_str());
+
+    //Date
+    String temp_date = ConvertNumberToGuiString(now.day()) + "." + ConvertNumberToGuiString(now.month()) + "." + String(now.year());
+    strcpy(dateLabelBuffer, temp_date.c_str());
+
+    //Time
+    String temp_time = ConvertNumberToGuiString(now.hour()) + ":" + ConvertNumberToGuiString(now.minute());
+    strcpy(timeLabelBuffer, temp_time.c_str());
+
+    #if DISABLE_UI_AND_TOUCH != true
+        if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
+        {
+            //GUI Update Day Name
+            lv_label_set_text(objects.clock_day, dayLabelBuffer);
+
+            //GUI Update Date
+            lv_label_set_text(objects.clock_date, dateLabelBuffer);
+
+            //GUI Update Time
+            lv_label_set_text(objects.clock_time, timeLabelBuffer);
+        }
+    #endif
 }
 
 
@@ -92,43 +93,16 @@ DateTime ClockControl::GetDateTime()
 }
 
 
-bool ClockControl::IsGuiUpdateNeeded()
+String ClockControl::ConvertNumberToGuiString(uint8_t number)
 {
-    if (GuiNeedsUpdate)
+    String numberToReturn = "00";
+    if (number <= 9)
     {
-        return true;
+        numberToReturn = "0" + String(number);
     }
-    return false;
+    else
+    {
+        numberToReturn = String(number);
+    }
+    return numberToReturn;
 }
-
-void ClockControl::GuiUpdateDone()
-{
-    GuiNeedsUpdate = false;
-    SecondsSinceLastUpdate = 0;
-}
-
-
-
-
-/*void ClockControl::TestClock()
-{
-    DateTime now = GetDateTime();
-
-    Serial.print(now.year(), DEC);
-    Serial.print('/');
-    Serial.print(now.month(), DEC);
-    Serial.print('/');
-    Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(weekDayNames[now.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
-
-    Serial.println();
-    delay(1000);
-}*/

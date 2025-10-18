@@ -30,7 +30,7 @@ typedef struct _objects_t {
     lv_obj_t *clock_time;
     lv_obj_t *clock_day;
     lv_obj_t *menu_main_title;
-    lv_obj_t *menu_main_opt1;
+    lv_obj_t *menu_main_button_set_time_ndate;
     lv_obj_t *menu_main_opt2;
     lv_obj_t *menu_main_opt3;
     lv_obj_t *button_exit_menu;
@@ -40,8 +40,11 @@ typedef struct _objects_t {
     lv_obj_t *button_back_menu_dev;
     lv_obj_t *menu_main_title_2;
     lv_obj_t *menu_time_ndate_cancel;
-    lv_obj_t *menu_time_ndate_save;
-    lv_obj_t *test_roller;
+    lv_obj_t *menu_time_ndate_time_next;
+    lv_obj_t *roller_time_ndate_time_hours;
+    lv_obj_t *roller_time_ndate_time_minutes;
+    lv_obj_t *menu_main_title_3;
+    lv_obj_t *menu_main_title_4;
 } objects_t;
 
 extern objects_t objects;

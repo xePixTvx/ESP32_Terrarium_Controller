@@ -106,17 +106,17 @@ void SensorUpdater::UpdateControllerDoorOpened()
     {
         IsControllerDoorOpened = true;
         //Serial.println("Controller Door is now Opened!");
-        //#if DISABLE_UI_AND_TOUCH != 1
-            //lv_obj_clear_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Show Door Opened Img
-        //#endif
+        #if DISABLE_UI_AND_TOUCH != true
+            lv_obj_clear_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Show Door Opened Img
+        #endif
     }
     else if ((pinValue < 3700) && IsControllerDoorOpened)
     {
         IsControllerDoorOpened = false;
         //Serial.println("Controller Door is now Closed!");
-        //#if DISABLE_UI_AND_TOUCH != 1
-            //lv_obj_add_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Hide Door Opened Img
-        //#endif
+        #if DISABLE_UI_AND_TOUCH != true
+            lv_obj_add_flag(objects.img_door_opened, LV_OBJ_FLAG_HIDDEN);//Hide Door Opened Img
+        #endif
     }
     else {}
 }
@@ -141,8 +141,8 @@ void SensorUpdater::UpdateOneWireTempSensors()
         ControllerTemp = 0.0;
     }
 
-    //#if DISABLE_UI_AND_TOUCH != 1
-        /*if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
+    #if DISABLE_UI_AND_TOUCH != true
+        if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
         {
             int valueDegree = 0;
             if ((ControllerTemp != -127) && (ControllerTemp >= 0) && (ControllerTemp <= 100))
@@ -159,8 +159,8 @@ void SensorUpdater::UpdateOneWireTempSensors()
             strcpy(controllerTemp_label_buffer, tempStr.c_str());
             lv_label_set_text(objects.controller_temp_widget_temp_label, controllerTemp_label_buffer);
             lv_bar_set_value(objects.controller_temp_widget_temp_value, valueDegree, LV_ANIM_ON);
-        }*/
-    //#endif
+        }
+    #endif
 }
 
 float SensorUpdater::GetControllerTemp()
@@ -196,8 +196,8 @@ void SensorUpdater::UpdateShtTempHumiditySensor()
     }
 
 
-    //#if DISABLE_UI_AND_TOUCH != 1
-        /*if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
+    #if DISABLE_UI_AND_TOUCH != true
+        if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)//If Current Screen is SCREEN_ID_INFO_SCREEN
         {
             //Temp
             int valueDegree = 0;
@@ -231,8 +231,8 @@ void SensorUpdater::UpdateShtTempHumiditySensor()
             strcpy(terrariumHumidity_label_buffer, humidStr.c_str());
             lv_label_set_text(objects.terrarium_humidity_value, terrariumHumidity_label_buffer);
             lv_bar_set_value(objects.terrarium_humidity_bar, valueHum, LV_ANIM_ON);
-        }*/
-    //#endif
+        }
+    #endif
 }
 
 float SensorUpdater::GetTerrariumTemp()

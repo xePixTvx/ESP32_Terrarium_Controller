@@ -4,7 +4,7 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: Combining shit again
+//LAST WORKED ON: Time & Date GUI/Menu Stuff ---- Should be 2 menus
 
 
 
@@ -18,8 +18,7 @@
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- Needs Testing
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
 *                   Terrarium Light & Heater                -------------------------------- NOT STARTED
-*                   RTC(DS3231)                             -------------------------------- WIP
-*                   ESP-NOW                                 -------------------------------- NOPE LETS NOT DO IT
+*                   RTC(DS3231)                             -------------------------------- DONE ------- Should be working
 */
 #include "COMMON_DEFINES.h"
 
@@ -28,8 +27,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <SHT31.h>
-//#include <esp_now.h>
-//#include <WiFiMulti.h>
 
 
 #if DISABLE_UI_AND_TOUCH != true
@@ -78,27 +75,6 @@ SensorUpdater SensorUpd = SensorUpdater(&OneWireTempSensors, &ShtSensor);
 ClockControl ClockCtrl = ClockControl();
 
 
-
-/*
-//ESP-NOW
-uint8_t DisplayControllerMacAddress[] = { 0x78, 0x1C, 0x3C, 0x2C, 0x71, 0xCC };
-esp_now_peer_info_t peerInfo;
-
-//ESP-NOW Message Structure
-typedef struct struct_EspNowMessage
-{
-    String msg;
-} struct_EspNowMessage;
-
-//ESP-NOW Incoming Message
-struct_EspNowMessage IncomingEspNowMessage;
-
-
-//ESP-NOW MessageToSend
-struct_EspNowMessage MessageToSend;
-*/
-
-
 void setup()
 {
     //Init Serial
@@ -132,10 +108,6 @@ void setup()
 
     Serial.println("Setup Done!");
     delay(200);
-
-    //Init ESP-NOW
-    //InitEspNow();
-    //delay(200);
 }
 
 
@@ -155,12 +127,6 @@ void loop()
         AllowUpdaterTask = true;
     }
 
-    if (ClockCtrl.IsGuiUpdateNeeded())
-    {
-        Serial.println("Clock Gui Update");
-        ClockCtrl.GuiUpdateDone();
-    }
-
 
 
 
@@ -171,25 +137,6 @@ void loop()
     lv_tick_inc(2);//LVGL
     delay(2);
 #endif
-
-
-
-
-
-    /*MessageToSend.msg = "Hello World!";
-
-    // Send message via ESP-NOW
-    esp_err_t result = esp_now_send(DisplayControllerMacAddress, (uint8_t*)&MessageToSend, sizeof(MessageToSend));
-    if (result == ESP_OK) 
-    {
-        Serial.println("Sent with success");
-    }
-    else 
-    {
-        Serial.println("Error sending the data");
-    }
-    delay(5000);*/
-
 }
 
 
@@ -201,7 +148,7 @@ void UpdateTask(void* arg)
         if (AllowUpdaterTask)
         {
             //Update Sensor Updater
-            SensorUpd.Update();
+            //SensorUpd.Update();
         }
         delay(2);
     }
@@ -238,11 +185,8 @@ void InitGui()
     ui_init();
     delay(200);
 
-    //Menu Button Events
-    lv_obj_add_event_cb(objects.button_open_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Menu Button
-    lv_obj_add_event_cb(objects.button_exit_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Close Menu Button
-    lv_obj_add_event_cb(objects.menu_main_opt_open_dev_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open DevMenu Button
-    lv_obj_add_event_cb(objects.button_back_menu_dev, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button(DevMenu)
+    //Menu Options Stuff
+    SetupMenuOptions();
 }
 
 
@@ -268,6 +212,29 @@ void touchscreen_read(lv_indev_t* indev, lv_indev_data_t* data)
 }
 
 
+
+
+//Menu Options Stuff
+void SetupMenuOptions()
+{
+    //Info Screen
+    lv_obj_add_event_cb(objects.button_open_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Menu Button
+
+    //Main Menu
+    lv_obj_add_event_cb(objects.button_exit_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Close Menu Button
+    lv_obj_add_event_cb(objects.menu_main_opt_open_dev_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open DevMenu Button
+    lv_obj_add_event_cb(objects.menu_main_button_set_time_ndate, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Set Time & Date Menu
+
+    //Dev Menu
+    lv_obj_add_event_cb(objects.button_back_menu_dev, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button(DevMenu)
+}
+
+
+
+
+
+
+
 //Main Button Event
 static void main_button_event_cb(lv_event_t* e)
 {
@@ -276,21 +243,48 @@ static void main_button_event_cb(lv_event_t* e)
 
     if (code == LV_EVENT_CLICKED)
     {
-        if (btn == objects.button_open_menu)//Open Menu Button Clicked
+        //Info Screen
+        if (getCurrentScreen() == SCREEN_ID_INFO_SCREEN)
         {
-            changeToNextScreen(SCREEN_ID_MENU_MAIN);
+            if (btn == objects.button_open_menu)//Open Menu Button Clicked
+            {
+                changeToNextScreen(SCREEN_ID_MENU_MAIN);
+            }
         }
-        else if (btn == objects.button_exit_menu)//Close Menu Button Clicked
+
+
+        //Main Menu
+        if (getCurrentScreen() == SCREEN_ID_MENU_MAIN)
         {
-            changeToPrevScreen(SCREEN_ID_INFO_SCREEN);
+            if (btn == objects.button_exit_menu)//Close Menu Button Clicked
+            {
+                changeToPrevScreen(SCREEN_ID_INFO_SCREEN);
+            }
+            else if (btn == objects.menu_main_opt_open_dev_menu)//Open Developer Menu Button Clicked
+            {
+                changeToNextScreen(SCREEN_ID_MENU_DEV);
+            }
+            else if (btn == objects.menu_main_button_set_time_ndate)//Open Set Time & Date Menu
+            {
+                changeToNextScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE);
+            }
         }
-        else if (btn == objects.menu_main_opt_open_dev_menu)//Open Developer Menu Button Clicked
+
+
+        //Set Time & Date Menu
+        if (getCurrentScreen() == SCREEN_ID_MENU_SETTINGS_TIME_NDATE)
         {
-            changeToNextScreen(SCREEN_ID_MENU_DEV);
+
         }
-        else if (btn == objects.button_back_menu_dev)//Go Back Button Clicked --- DevMenu
+
+
+        //Developer Menu
+        if (getCurrentScreen() == SCREEN_ID_MENU_DEV)
         {
-            changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+            if (btn == objects.button_back_menu_dev)//Go Back Button Clicked --- DevMenu
+            {
+                changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+            }
         }
     }
     else
@@ -299,75 +293,3 @@ static void main_button_event_cb(lv_event_t* e)
 }
 
 #endif
-
-
-
-
-
-
-
-
-
-
-/*
-void InitEspNow()
-{
-    //Set as Wi-Fi Station
-    WiFi.mode(WIFI_STA);
-
-    //Init ESP-NOW
-    if (esp_now_init() != ESP_OK)
-    {
-        Serial.println("ESP-NOW Init ERROR!");
-        return;
-    }
-
-    //On Data Sent
-    esp_now_register_send_cb(esp_now_send_cb_t(OnDataSent));
-
-    //Register peer
-    memcpy(peerInfo.peer_addr, DisplayControllerMacAddress, 6);
-    peerInfo.channel = 0;
-    peerInfo.encrypt = false;
-
-    //Add peer        
-    if (esp_now_add_peer(&peerInfo) != ESP_OK)
-    {
-        Serial.println("ESP-NOW: Failed to add peer");
-        return;
-    }
-
-    //On Data Received
-    esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
-
-    Serial.println("ESP-NOW Initialized!");
-    delay(200);
-}
-
-
-// Callback when data is sent
-static void OnDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) 
-{
-    Serial.print("\r\nLast Packet Send Status:\t");
-    Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-    if (status == 0) 
-    {
-        Serial.println("Delivery Success");
-    }
-    else 
-    {
-        Serial.println("Delivery Fail");
-    }
-}
-
-// Callback when data is received
-void OnDataRecv(const uint8_t* mac, const uint8_t* incomingData, int len) 
-{
-    memcpy(&IncomingEspNowMessage, incomingData, sizeof(IncomingEspNowMessage));
-    Serial.print("Bytes received: ");
-    Serial.println(len);
-    Serial.println("MSG: " + IncomingEspNowMessage.msg);
-}
-*/
-
-

@@ -7,7 +7,7 @@
 
 /************************************************COMMON DEFINES***************************************************/
 
-//Disable GUI & Touchscreen
+//Disable GUI & Touchscreen(for Development)
 #define DISABLE_UI_AND_TOUCH false
 
 

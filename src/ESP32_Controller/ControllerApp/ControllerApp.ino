@@ -4,7 +4,7 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: Time & Date GUI/Menu Stuff ---- Should be 2 menus
+//LAST WORKED ON: Time & Date GUI/Menu Stuff ---- Should be 2 menus ------ Currently not working
 
 
 
@@ -225,6 +225,12 @@ void SetupMenuOptions()
     lv_obj_add_event_cb(objects.menu_main_opt_open_dev_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open DevMenu Button
     lv_obj_add_event_cb(objects.menu_main_button_set_time_ndate, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Set Time & Date Menu
 
+    //Time & Date Menu
+    lv_obj_add_event_cb(objects.menu_time_ndate_button_cancel, main_button_event_cb, LV_EVENT_ALL, NULL);//Cancel Button
+    lv_obj_add_event_cb(objects.menu_time_ndate_button_time_next, main_button_event_cb, LV_EVENT_ALL, NULL);//Next Button
+    lv_obj_add_event_cb(objects.menu_time_ndate_button_save, main_button_event_cb, LV_EVENT_ALL, NULL);//Save Button
+    lv_obj_add_event_cb(objects.menu_time_ndate_button_prev, main_button_event_cb, LV_EVENT_ALL, NULL);//Prev Button
+
     //Dev Menu
     lv_obj_add_event_cb(objects.button_back_menu_dev, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button(DevMenu)
 }
@@ -266,6 +272,14 @@ static void main_button_event_cb(lv_event_t* e)
             }
             else if (btn == objects.menu_main_button_set_time_ndate)//Open Set Time & Date Menu
             {
+                //Set Rollers to Current Time And Date here
+                DateTime dateTime = ClockCtrl.GetDateTime();
+                lv_roller_set_selected(objects.roller_time_ndate_time_hours, (dateTime.hour() - 1), true);
+                lv_roller_set_selected(objects.roller_time_ndate_time_minutes, (dateTime.minute() - 1), true);
+                lv_roller_set_selected(objects.roller_time_ndate_date_day, (dateTime.day() - 1), true);
+                lv_roller_set_selected(objects.roller_time_ndate_date_month, (dateTime.month() - 1), true);
+                lv_roller_set_selected_str(objects.roller_time_ndate_date_year, String(dateTime.year()).c_str(), true);
+
                 changeToNextScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE);
             }
         }
@@ -274,7 +288,37 @@ static void main_button_event_cb(lv_event_t* e)
         //Set Time & Date Menu
         if (getCurrentScreen() == SCREEN_ID_MENU_SETTINGS_TIME_NDATE)
         {
+            if (btn == objects.menu_time_ndate_button_cancel)//Cancel Button
+            {
+                changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+            }
+            else if (btn == objects.menu_time_ndate_button_time_next)
+            {
+                changeToNextScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE2);
+            }
+        }
 
+        //Set Time & Date Menu 2
+        if (getCurrentScreen() == SCREEN_ID_MENU_SETTINGS_TIME_NDATE2)
+        {
+            if (btn == objects.menu_time_ndate_button_save)//Save Button
+            {
+                uint32_t hour = lv_roller_get_selected(objects.roller_time_ndate_time_hours);
+                uint32_t minute = lv_roller_get_selected(objects.roller_time_ndate_time_minutes);
+                uint32_t day = lv_roller_get_selected(objects.roller_time_ndate_date_day);
+                uint32_t month = lv_roller_get_selected(objects.roller_time_ndate_date_month);
+                
+                char buf[4];
+                lv_roller_get_selected_str(objects.roller_time_ndate_date_year, buf, 4);
+                uint32_t year = atoi(buf);
+                ClockCtrl.SetTimeAndDate(year, month+1, day+1, hour+1, minute+1, 0);
+                ClockCtrl.Update();
+                changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+            }
+            else if (btn == objects.menu_time_ndate_button_prev)//Previous Button
+            {
+                changeToPrevScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE);
+            }
         }
 
 
@@ -291,5 +335,8 @@ static void main_button_event_cb(lv_event_t* e)
     {
     }
 }
+
+
+
 
 #endif

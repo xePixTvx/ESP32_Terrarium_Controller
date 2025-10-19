@@ -12,6 +12,7 @@ typedef struct _objects_t {
     lv_obj_t *menu_main;
     lv_obj_t *menu_dev;
     lv_obj_t *menu_settings_time_ndate;
+    lv_obj_t *menu_settings_time_ndate2;
     lv_obj_t *terrarium_info_widget;
     lv_obj_t *terrarium_air_temp_value;
     lv_obj_t *terrarium_air_temp_bar;
@@ -39,12 +40,21 @@ typedef struct _objects_t {
     lv_obj_t *menu_dev_opt1;
     lv_obj_t *button_back_menu_dev;
     lv_obj_t *menu_main_title_2;
-    lv_obj_t *menu_time_ndate_cancel;
-    lv_obj_t *menu_time_ndate_time_next;
+    lv_obj_t *menu_time_ndate_button_cancel;
+    lv_obj_t *menu_time_ndate_button_time_next;
     lv_obj_t *roller_time_ndate_time_hours;
     lv_obj_t *roller_time_ndate_time_minutes;
     lv_obj_t *menu_main_title_3;
     lv_obj_t *menu_main_title_4;
+    lv_obj_t *menu_main_title_5;
+    lv_obj_t *menu_time_ndate_button_prev;
+    lv_obj_t *menu_time_ndate_button_save;
+    lv_obj_t *roller_time_ndate_date_day;
+    lv_obj_t *roller_time_ndate_date_month;
+    lv_obj_t *menu_main_title_6;
+    lv_obj_t *menu_main_title_7;
+    lv_obj_t *roller_time_ndate_date_year;
+    lv_obj_t *menu_main_title_8;
 } objects_t;
 
 extern objects_t objects;
@@ -54,6 +64,7 @@ enum ScreensEnum {
     SCREEN_ID_MENU_MAIN = 2,
     SCREEN_ID_MENU_DEV = 3,
     SCREEN_ID_MENU_SETTINGS_TIME_NDATE = 4,
+    SCREEN_ID_MENU_SETTINGS_TIME_NDATE2 = 5,
 };
 
 void create_screen_info_screen();
@@ -67,6 +78,9 @@ void tick_screen_menu_dev();
 
 void create_screen_menu_settings_time_ndate();
 void tick_screen_menu_settings_time_ndate();
+
+void create_screen_menu_settings_time_ndate2();
+void tick_screen_menu_settings_time_ndate2();
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

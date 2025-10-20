@@ -28,7 +28,7 @@ void SensorUpdater::Begin()
 void SensorUpdater::Start()
 {
 	IsPaused = false;
-	Serial.println("SensorUpdater Started!");
+	//Serial.println("SensorUpdater Started!");
 }
 
 
@@ -36,7 +36,7 @@ void SensorUpdater::Start()
 void SensorUpdater::Pause()
 {
 	IsPaused = true;
-	Serial.println("SensorUpdater Paused!");
+	//Serial.println("SensorUpdater Paused!");
 }
 
 
@@ -66,6 +66,9 @@ void SensorUpdater::Update()
     {
         if ((millis() - timeLastUpdate) >= UPDATE_SENSORS_DELAY)
         {
+            //Serial.println("Sensor Updater: Do Update");
+            
+
             //Update Controller Door Opened Switch
             UpdateControllerDoorOpened();
 
@@ -82,6 +85,8 @@ void SensorUpdater::Update()
 
             //Update last Update Time
             timeLastUpdate = millis();
+
+            //Serial.println("Sensor Updater: Update Done");
         }
     }
 }

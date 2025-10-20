@@ -4,21 +4,34 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: Time & Date GUI/Menu Stuff ---- Should be 2 menus ------ Currently not working
+//LAST WORKED ON: Fixing SensorUpdater
+
+
+//NEEDS FIXING:
+//SensorUpdater causes restarts
+/* Some info:
+    E (86141) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+    E (86141) task_wdt:  - IDLE0 (CPU 0)
+    E (86141) task_wdt: Tasks currently running:
+    E (86141) task_wdt: CPU 0: UpdateTask
+    E (86141) task_wdt: CPU 1: IDLE1
+    E (86141) task_wdt: Aborting.
+    E (86141) task_wdt: Print CPU 0 (current core) backtrace
+*/
 
 
 
 /*
 *           TODO:
-*                   SD Card Stuff                           -------------------------------- NEEDS TO BE RECODED
+*                   SD Card Stuff                           -------------------------------- NEEDS TO BE RE/CODED --- MAYBE REMOVE?
 *                   LVGL                                    -------------------------------- DONE ------- WORKS YAY
 *                   EEZ Studio Implementation               -------------------------------- DONE ------- WORKS YAY
-*                   FanControl                              -------------------------------- RPM Readings are still not 100% working
+*                   FanControl                              -------------------------------- RPM Readings are still not 100% working --- Currently not in use
 *                   Controller Temp Sensor                  -------------------------------- DONE ------- Needs Testing
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- Needs Testing
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
 *                   Terrarium Light & Heater                -------------------------------- NOT STARTED
-*                   RTC(DS3231)                             -------------------------------- DONE ------- Should be working
+*                   RTC(DS3231)                             -------------------------------- DONE ------- WORKS YAY
 */
 #include "COMMON_DEFINES.h"
 
@@ -148,7 +161,7 @@ void UpdateTask(void* arg)
         if (AllowUpdaterTask)
         {
             //Update Sensor Updater
-            //SensorUpd.Update();
+            SensorUpd.Update();
         }
         delay(2);
     }
@@ -185,8 +198,8 @@ void InitGui()
     ui_init();
     delay(200);
 
-    //Menu Options Stuff
-    SetupMenuOptions();
+    //Menu Events
+    SetupMenuEvents();
 }
 
 
@@ -215,7 +228,7 @@ void touchscreen_read(lv_indev_t* indev, lv_indev_data_t* data)
 
 
 //Menu Options Stuff
-void SetupMenuOptions()
+void SetupMenuEvents()
 {
     //Info Screen
     lv_obj_add_event_cb(objects.button_open_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Menu Button
@@ -233,6 +246,7 @@ void SetupMenuOptions()
 
     //Dev Menu
     lv_obj_add_event_cb(objects.button_back_menu_dev, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button(DevMenu)
+    lv_obj_add_event_cb(objects.menu_dev_opt_reset_clock, main_button_event_cb, LV_EVENT_ALL, NULL);//Reset Clock Button
 }
 
 
@@ -278,7 +292,7 @@ static void main_button_event_cb(lv_event_t* e)
                 lv_roller_set_selected(objects.roller_time_ndate_time_minutes, (dateTime.minute() - 1), true);
                 lv_roller_set_selected(objects.roller_time_ndate_date_day, (dateTime.day() - 1), true);
                 lv_roller_set_selected(objects.roller_time_ndate_date_month, (dateTime.month() - 1), true);
-                lv_roller_set_selected_str(objects.roller_time_ndate_date_year, String(dateTime.year()).c_str(), true);
+                lv_roller_set_selected_str(objects.roller_time_ndate_date_year, String(dateTime.year()).c_str(), true);//does this really work??
 
                 changeToNextScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE);
             }
@@ -292,7 +306,7 @@ static void main_button_event_cb(lv_event_t* e)
             {
                 changeToPrevScreen(SCREEN_ID_MENU_MAIN);
             }
-            else if (btn == objects.menu_time_ndate_button_time_next)
+            else if (btn == objects.menu_time_ndate_button_time_next)//Next Button
             {
                 changeToNextScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE2);
             }
@@ -303,17 +317,21 @@ static void main_button_event_cb(lv_event_t* e)
         {
             if (btn == objects.menu_time_ndate_button_save)//Save Button
             {
-                uint32_t hour = lv_roller_get_selected(objects.roller_time_ndate_time_hours);
-                uint32_t minute = lv_roller_get_selected(objects.roller_time_ndate_time_minutes);
-                uint32_t day = lv_roller_get_selected(objects.roller_time_ndate_date_day);
-                uint32_t month = lv_roller_get_selected(objects.roller_time_ndate_date_month);
+                //Get from GUI Rollers
+                uint32_t hour = lv_roller_get_selected(objects.roller_time_ndate_time_hours) + 1;
+                uint32_t minute = lv_roller_get_selected(objects.roller_time_ndate_time_minutes) + 1;
+                uint32_t day = lv_roller_get_selected(objects.roller_time_ndate_date_day) + 1;
+                uint32_t month = lv_roller_get_selected(objects.roller_time_ndate_date_month) + 1;
                 
-                char buf[4];
-                lv_roller_get_selected_str(objects.roller_time_ndate_date_year, buf, 4);
+                //Get Year String and convert it to uint32_t
+                char buf[5];
+                lv_roller_get_selected_str(objects.roller_time_ndate_date_year, buf, 5);
                 uint32_t year = atoi(buf);
-                ClockCtrl.SetTimeAndDate(year, month+1, day+1, hour+1, minute+1, 0);
-                ClockCtrl.Update();
-                changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+                //Serial.println("YEAR: " + String(year));
+
+                //Set Clock Time & Date and Restart ESP32
+                ClockCtrl.SetTimeAndDate(year, month, day, hour, minute, 0);//Set Clock Time & Date
+                ESP.restart();//RESTART ESP32
             }
             else if (btn == objects.menu_time_ndate_button_prev)//Previous Button
             {
@@ -328,6 +346,11 @@ static void main_button_event_cb(lv_event_t* e)
             if (btn == objects.button_back_menu_dev)//Go Back Button Clicked --- DevMenu
             {
                 changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+            }
+            else if (btn == objects.menu_dev_opt_reset_clock)//Reset Clock --- DevMenu
+            {
+                ClockCtrl.SetTimeAndDate(2000, 1, 1, 20, 15, 0);//Set Clock Time & Date
+                ESP.restart();//RESTART ESP32
             }
         }
     }

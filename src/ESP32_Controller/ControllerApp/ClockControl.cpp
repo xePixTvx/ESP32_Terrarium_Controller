@@ -29,10 +29,6 @@ void ClockControl::SetTimeAndDate(int year, int month, int day, int hour, int mi
 {
     //Serial.println("ReAdjusted RTC Date & Time!");
     RTC_Device.adjust(DateTime(year, month, day, hour, minute, second));
-    DateTime now = GetDateTime();
-    SecondsAtLastUpdate = now.second();
-    SecondsSinceLastUpdate = SecondsAtLastUpdate;
-    UpdateClockGui(now);
 }
 
 

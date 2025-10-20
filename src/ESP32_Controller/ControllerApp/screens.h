@@ -37,8 +37,9 @@ typedef struct _objects_t {
     lv_obj_t *button_exit_menu;
     lv_obj_t *menu_main_opt_open_dev_menu;
     lv_obj_t *menu_main_title_1;
-    lv_obj_t *menu_dev_opt1;
+    lv_obj_t *menu_dev_opt_reset_clock;
     lv_obj_t *button_back_menu_dev;
+    lv_obj_t *menu_dev_opt1;
     lv_obj_t *menu_main_title_2;
     lv_obj_t *menu_time_ndate_button_cancel;
     lv_obj_t *menu_time_ndate_button_time_next;

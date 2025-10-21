@@ -2,13 +2,18 @@
 
 //ESP32 Force Download Bootmode = Connect GPIO0 & GND with a 10k OHM Resistor
 
-//ERASE FLASH CMD = python -m esptool --chip esp32 erase_flash
+//ERASE FLASH CMD = python -m esptool --chip esp32 erase-flash
 
 
 /************************************************COMMON DEFINES***************************************************/
 
 //Disable GUI & Touchscreen(for Development)
 #define DISABLE_UI_AND_TOUCH false
+
+//Disabel Senor Updating(Disable if no sensor is connected)
+#define DISABLE_SENOR_UPDATE_ControllerDoor true
+#define DISABLE_SENOR_UPDATE_ControllerTemp true
+#define DISABLE_SENOR_UPDATE_ShtTempHumidity true
 
 
 

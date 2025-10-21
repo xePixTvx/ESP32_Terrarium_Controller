@@ -4,20 +4,8 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: Fixing SensorUpdater
+//LAST WORKED ON: Do Testing
 
-
-//NEEDS FIXING:
-//SensorUpdater causes restarts
-/* Some info:
-    E (86141) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
-    E (86141) task_wdt:  - IDLE0 (CPU 0)
-    E (86141) task_wdt: Tasks currently running:
-    E (86141) task_wdt: CPU 0: UpdateTask
-    E (86141) task_wdt: CPU 1: IDLE1
-    E (86141) task_wdt: Aborting.
-    E (86141) task_wdt: Print CPU 0 (current core) backtrace
-*/
 
 
 

@@ -47,6 +47,7 @@ void ClockControl::Update()
     {
         UpdateClockGui(now);
         SecondsSinceLastUpdate = 0;
+        //Serial.println("Clock Update Done!");
     }
 }
 

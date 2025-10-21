@@ -69,14 +69,20 @@ void SensorUpdater::Update()
             //Serial.println("Sensor Updater: Do Update");
             
 
-            //Update Controller Door Opened Switch
-            UpdateControllerDoorOpened();
+            #if DISABLE_SENOR_UPDATE_ControllerDoor != true
+                //Update Controller Door Opened Switch
+                UpdateControllerDoorOpened();
+            #endif
 
-            //Update One Wire Bus Temp Sensors
-            UpdateOneWireTempSensors();
+            #if DISABLE_SENOR_UPDATE_ControllerTemp != true
+                //Update One Wire Bus Temp Sensors
+                UpdateOneWireTempSensors();
+            #endif
 
-            //Update SHT Temp & Humidity Sensor
-            UpdateShtTempHumiditySensor();
+            #if DISABLE_SENOR_UPDATE_ShtTempHumidity != true
+                //Update SHT Temp & Humidity Sensor
+                UpdateShtTempHumiditySensor();
+            #endif
 
 
 
@@ -194,10 +200,16 @@ void SensorUpdater::UpdateShtTempHumiditySensor()
         {
             TerrariumTemp = 0.0;
         }
+
+        if ((TerrariumHumidity < 0) || (TerrariumHumidity > 100))
+        {
+            TerrariumHumidity = 0.0;
+        }
     }
     else
     {
         TerrariumTemp = 0.0;
+        TerrariumHumidity = 0.0;
     }
 
 

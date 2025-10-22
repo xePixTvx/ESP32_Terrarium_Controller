@@ -4,7 +4,7 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: Do Testing
+//LAST WORKED ON: GUI Light Settings Menu
 
 
 
@@ -15,11 +15,12 @@
 *                   LVGL                                    -------------------------------- DONE ------- WORKS YAY
 *                   EEZ Studio Implementation               -------------------------------- DONE ------- WORKS YAY
 *                   FanControl                              -------------------------------- RPM Readings are still not 100% working --- Currently not in use
-*                   Controller Temp Sensor                  -------------------------------- DONE ------- Needs Testing
-*                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- Needs Testing
+*                   Controller Temp Sensor                  -------------------------------- DONE ------- WORKS YAY
+*                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
 *                   Terrarium Light & Heater                -------------------------------- NOT STARTED
 *                   RTC(DS3231)                             -------------------------------- DONE ------- WORKS YAY
+*                   Config/Settings using Preferences       -------------------------------- NOT STARTED
 */
 #include "COMMON_DEFINES.h"
 
@@ -41,6 +42,7 @@
 
 #include "SensorUpdater.h"
 #include "ClockControl.h"
+#include "FanControl.h"
 
 
 #if DISABLE_UI_AND_TOUCH != true
@@ -75,6 +77,9 @@ SensorUpdater SensorUpd = SensorUpdater(&OneWireTempSensors, &ShtSensor);
 //Clock Controller
 ClockControl ClockCtrl = ClockControl();
 
+//Fan Controller
+FanControl FanController = FanControl();
+
 
 void setup()
 {
@@ -90,10 +95,10 @@ void setup()
     digitalWrite(SD_CARD_CS_PIN, HIGH); // SD card chips select, must use GPIO 5 (ESP32 SS)
     delay(200);
 
-#if DISABLE_UI_AND_TOUCH != true
-    InitGui();
-    delay(200);
-#endif
+    #if DISABLE_UI_AND_TOUCH != true
+        InitGui();
+        delay(200);
+    #endif
 
     //Init Clock Controller
     ClockCtrl.Begin();
@@ -107,6 +112,11 @@ void setup()
     SensorUpd.Begin();
     delay(200);
 
+    //Init Fan Controller
+    FanController.Begin();
+    FanController.SetSpeedPercent(0, 0);
+    FanController.SetSpeedPercent(1, 0);
+
     Serial.println("Setup Done!");
     delay(200);
 }
@@ -119,9 +129,11 @@ void setup()
 //MAIN LOOP
 void loop()
 {
+    //RTC Update
     ClockCtrl.Update();
 
 
+    //Start Sensor Updating after delay
     if (!AllowUpdaterTask && (millis() >= UPDATE_TASK_START_DELAY))
     {
         SensorUpd.Start();
@@ -131,13 +143,13 @@ void loop()
 
 
 
-
-#if DISABLE_UI_AND_TOUCH != true
-    lv_task_handler();//LVGL
-    ui_tick();//EEZ Studio UI
-    lv_tick_inc(2);//LVGL
-    delay(2);
-#endif
+    //LVGL/EEZ GUI Stuff
+    #if DISABLE_UI_AND_TOUCH != true
+        lv_task_handler();//LVGL
+        ui_tick();//EEZ Studio UI
+        lv_tick_inc(2);//LVGL
+        delay(2);
+    #endif
 }
 
 
@@ -150,6 +162,9 @@ void UpdateTask(void* arg)
         {
             //Update Sensor Updater
             SensorUpd.Update();
+
+            //Update Fan Controller
+            FanController.Update();
         }
         delay(2);
     }
@@ -225,12 +240,17 @@ void SetupMenuEvents()
     lv_obj_add_event_cb(objects.button_exit_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Close Menu Button
     lv_obj_add_event_cb(objects.menu_main_opt_open_dev_menu, main_button_event_cb, LV_EVENT_ALL, NULL);//Open DevMenu Button
     lv_obj_add_event_cb(objects.menu_main_button_set_time_ndate, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Set Time & Date Menu
+    lv_obj_add_event_cb(objects.menu_main_opt_light_settings, main_button_event_cb, LV_EVENT_ALL, NULL);//Open Light Settings Menu
 
     //Time & Date Menu
     lv_obj_add_event_cb(objects.menu_time_ndate_button_cancel, main_button_event_cb, LV_EVENT_ALL, NULL);//Cancel Button
     lv_obj_add_event_cb(objects.menu_time_ndate_button_time_next, main_button_event_cb, LV_EVENT_ALL, NULL);//Next Button
     lv_obj_add_event_cb(objects.menu_time_ndate_button_save, main_button_event_cb, LV_EVENT_ALL, NULL);//Save Button
     lv_obj_add_event_cb(objects.menu_time_ndate_button_prev, main_button_event_cb, LV_EVENT_ALL, NULL);//Prev Button
+
+    //Light Settings Menu
+    lv_obj_add_event_cb(objects.button_back_menu_light_settings, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button
+    lv_obj_add_event_cb(objects.menu_light_settings_button_save, main_button_event_cb, LV_EVENT_ALL, NULL);//Save Button
 
     //Dev Menu
     lv_obj_add_event_cb(objects.button_back_menu_dev, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button(DevMenu)
@@ -284,6 +304,10 @@ static void main_button_event_cb(lv_event_t* e)
 
                 changeToNextScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE);
             }
+            else if (btn == objects.menu_main_opt_light_settings)//Open Light Settings Menu
+            {
+                changeToNextScreen(SCREEN_ID_MENU_SETTINGS_LIGHT);
+            }
         }
 
 
@@ -326,6 +350,35 @@ static void main_button_event_cb(lv_event_t* e)
                 changeToPrevScreen(SCREEN_ID_MENU_SETTINGS_TIME_NDATE);
             }
         }
+
+
+        //Light Settings Menu
+        if (getCurrentScreen() == SCREEN_ID_MENU_SETTINGS_LIGHT)
+        {
+            if (btn == objects.button_back_menu_light_settings)//Go Back to Main Menu Button
+            {
+                changeToPrevScreen(SCREEN_ID_MENU_MAIN);
+            }
+            else if (btn == objects.menu_light_settings_button_save)//Save Button
+            {
+                uint32_t on_hour = lv_roller_get_selected(objects.roller_lights_on_time_hour) + 1;
+                uint32_t on_minute = lv_roller_get_selected(objects.roller_lights_on_time_minute) + 1;
+                uint32_t off_hour = lv_roller_get_selected(objects.roller_lights_off_time_hour) + 1;
+                uint32_t off_minute = lv_roller_get_selected(objects.roller_lights_off_time_minute) + 1;
+
+                String on_time_to_save = String(on_hour) + ":" + String(on_minute);
+                String off_time_to_save = String(off_hour) + ":" + String(off_minute);
+                //Serial.println(on_time_to_save);
+                //delay(200);
+            }
+        }
+
+
+
+
+
+
+
 
 
         //Developer Menu

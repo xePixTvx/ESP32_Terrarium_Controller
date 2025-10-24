@@ -15,6 +15,9 @@
 #define DISABLE_SENOR_UPDATE_ControllerTemp true
 #define DISABLE_SENOR_UPDATE_ShtTempHumidity true
 
+//LittleFS Format on Fail
+#define LITTLEFS_FORMAT_ON_FAIL false//set to true after flash erase(only once)
+
 
 
 //Update Sensors Time  ------  1000 = 1sec

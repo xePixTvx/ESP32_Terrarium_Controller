@@ -12,10 +12,7 @@ void ClockControl::Begin()
     {
         Serial.println("RTC Init Failed!");
         Serial.flush();
-        while (1)
-        {
-            delay(10);
-        }
+        ESP.restart();
     }
 
     if (RTC_Device.lostPower())

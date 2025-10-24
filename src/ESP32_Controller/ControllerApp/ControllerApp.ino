@@ -4,23 +4,23 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: GUI Light Settings Menu
+//LAST WORKED ON: GUI Light Settings Menu --- Config stuff needs to work first!!!!!
+//                Config Controller ------ Read File Stuff
 
 
 
 
 /*
 *           TODO:
-*                   SD Card Stuff                           -------------------------------- NEEDS TO BE RE/CODED --- MAYBE REMOVE?
 *                   LVGL                                    -------------------------------- DONE ------- WORKS YAY
 *                   EEZ Studio Implementation               -------------------------------- DONE ------- WORKS YAY
 *                   FanControl                              -------------------------------- RPM Readings are still not 100% working --- Currently not in use
 *                   Controller Temp Sensor                  -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
-*                   Terrarium Light & Heater                -------------------------------- NOT STARTED
+*                   Terrarium Light & Heater                -------------------------------- NOT STARTED --- ACTUAL ELECTRIC STUFF IS WIP
 *                   RTC(DS3231)                             -------------------------------- DONE ------- WORKS YAY
-*                   Config/Settings using Preferences       -------------------------------- NOT STARTED
+*                   Config/Settings using LittleFS          -------------------------------- WIP
 */
 #include "COMMON_DEFINES.h"
 
@@ -29,6 +29,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <SHT31.h>
+
 
 
 #if DISABLE_UI_AND_TOUCH != true
@@ -40,10 +41,14 @@
 
 
 
+#include "ConfigControl.h"
 #include "SensorUpdater.h"
 #include "ClockControl.h"
 #include "FanControl.h"
 
+
+//Config Controller
+ConfigControl ConfigController = ConfigControl();
 
 #if DISABLE_UI_AND_TOUCH != true
     //Touchscreen
@@ -57,9 +62,6 @@
     #define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
     uint32_t draw_buf[DRAW_BUF_SIZE / 4];
 #endif
-
-
-
 
 //Update Task Delay Setting
 static bool AllowUpdaterTask = false;
@@ -102,6 +104,10 @@ void setup()
 
     //Init Clock Controller
     ClockCtrl.Begin();
+    delay(200);
+
+    //Init Config Controller
+    ConfigController.Begin();
     delay(200);
 
     //Create UpdaterTask

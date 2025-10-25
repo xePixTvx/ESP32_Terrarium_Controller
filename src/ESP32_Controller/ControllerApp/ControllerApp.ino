@@ -6,6 +6,7 @@
 
 //LAST WORKED ON: GUI Light Settings Menu --- Config stuff needs to work first!!!!!
 //                Config Controller ------ Read File Stuff
+//LIGHT & HEATER STUFF ------ RESOLDER to other GPIO PINS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -14,11 +15,11 @@
 *           TODO:
 *                   LVGL                                    -------------------------------- DONE ------- WORKS YAY
 *                   EEZ Studio Implementation               -------------------------------- DONE ------- WORKS YAY
-*                   FanControl                              -------------------------------- RPM Readings are still not 100% working --- Currently not in use
+*                   FanControl                              -------------------------------- RPM Readings are still not 100% working
 *                   Controller Temp Sensor                  -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
-*                   Terrarium Light & Heater                -------------------------------- NOT STARTED --- ACTUAL ELECTRIC STUFF IS WIP
+*                   Terrarium Light & Heater                -------------------------------- WIP --- ACTUAL ELECTRIC STUFF IS WIP(NEEDS RESOLDER)
 *                   RTC(DS3231)                             -------------------------------- DONE ------- WORKS YAY
 *                   Config/Settings using LittleFS          -------------------------------- WIP
 */
@@ -45,6 +46,7 @@
 #include "SensorUpdater.h"
 #include "ClockControl.h"
 #include "FanControl.h"
+#include "LightHeaterControl.h"
 
 
 //Config Controller
@@ -81,6 +83,9 @@ ClockControl ClockCtrl = ClockControl();
 
 //Fan Controller
 FanControl FanController = FanControl();
+
+//Light & Heater Controller
+LightHeaterControl LightHeaterController = LightHeaterControl();
 
 
 void setup()
@@ -122,6 +127,9 @@ void setup()
     FanController.Begin();
     FanController.SetSpeedPercent(0, 0);
     FanController.SetSpeedPercent(1, 0);
+
+    //Init Light & Heater Controller
+    LightHeaterController.Begin();
 
     Serial.println("Setup Done!");
     delay(200);
@@ -261,6 +269,10 @@ void SetupMenuEvents()
     //Dev Menu
     lv_obj_add_event_cb(objects.button_back_menu_dev, main_button_event_cb, LV_EVENT_ALL, NULL);//Go Back Button(DevMenu)
     lv_obj_add_event_cb(objects.menu_dev_opt_reset_clock, main_button_event_cb, LV_EVENT_ALL, NULL);//Reset Clock Button
+    lv_obj_add_event_cb(objects.menu_dev_opt_light_on, main_button_event_cb, LV_EVENT_ALL, NULL);//Turn Light on
+    lv_obj_add_event_cb(objects.menu_dev_opt_light_off, main_button_event_cb, LV_EVENT_ALL, NULL);//Turn Light off
+    lv_obj_add_event_cb(objects.menu_dev_opt_heater_on, main_button_event_cb, LV_EVENT_ALL, NULL);//Turn Heater on
+    lv_obj_add_event_cb(objects.menu_dev_opt_heater_off, main_button_event_cb, LV_EVENT_ALL, NULL);//Turn Heater off
 }
 
 
@@ -398,6 +410,18 @@ static void main_button_event_cb(lv_event_t* e)
             {
                 ClockCtrl.SetTimeAndDate(2000, 1, 1, 20, 15, 0);//Set Clock Time & Date
                 ESP.restart();//RESTART ESP32
+            }
+            else if (btn == objects.menu_dev_opt_light_on)
+            {
+            }
+            else if (btn == objects.menu_dev_opt_light_off)
+            {
+            }
+            else if (btn == objects.menu_dev_opt_heater_on)
+            {
+            }
+            else if (btn == objects.menu_dev_opt_heater_off)
+            {
             }
         }
     }

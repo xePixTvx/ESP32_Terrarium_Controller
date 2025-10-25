@@ -1,6 +1,6 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/userPages/5",
+    "selectedUserPageObject": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/userPages/2",
     "selectedActionObject": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/actions/0",
     "selectedThemeObject": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/themes/0",
     "selectedFontObject": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/fonts/1",
@@ -170,7 +170,8 @@
                       "enableClose": false,
                       "icon": "svg:hierarchy"
                     }
-                  ]
+                  ],
+                  "active": true
                 },
                 {
                   "type": "tabset",
@@ -200,16 +201,15 @@
                 {
                   "type": "tab",
                   "id": "#a9615712-8ef7-4616-a825-e05d6153cd5e",
-                  "name": "Menu_Settings_Light",
+                  "name": "Menu_Dev",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/userPages/5",
+                    "objectPath": "[Tarantula_Terrarium_Controller_GUI.eez-project]:/userPages/2",
                     "permanent": false
                   },
                   "icon": "svg:page"
                 }
-              ],
-              "active": true
+              ]
             },
             {
               "type": "row",
@@ -1037,9 +1037,7 @@
     "[Tarantula_Terrarium_Controller_GUI.eez-project]:/userPages/2[flow-state]": {
       "selection": {
         "0": {
-          "0": {
-            "$selected": true
-          }
+          "0": {}
         }
       },
       "transform": {

@@ -90,7 +90,7 @@ BLUE = SD_CS = GPIO5                ---- DONE ---- NOT USED
 /*** DONT CHANGE ANY PINs without RESOLDER ***/
 
 
-/********************************** TFT Display Pins(only used Chipselect reset on startup)
+/********************************** TFT Display Pins(only used for Chipselect reset on startup)
 PURPLE = CS = GPIO15
 ORANGE = T_CS = GPIO17
 BLUE = SD_CS = GPIO5
@@ -122,6 +122,14 @@ PIN = GPIO14
 #define CONTROLLER_DOOR_PIN 14
 
 
+/********************************** LIGHT AND HEATER RELAIS
+LIGHT = GPIO6 -- YELLOW
+HEATER = GPIO7 -- WHITE
+****************************************/
+#define LIGHT_RELAIS_SIGNAL_PIN 6	//RESOLDER to other GPIO
+#define HEATER_RELAIS_SIGNAL_PIN 7 //RESOLDER to other GPIO
+
+
 //////////////////////// FAN PWM
 /********************************** FANs
 PWM Fan1 = GPIO26
@@ -131,7 +139,7 @@ PWM Fan2 = GPIO27
 RPM Fan2 = GPIO12
 ****************************************/
 /*
-* NOT ALLOWED!!!!!!!!!!!!
+* NOT ALLOWED for PWM!!!!!!!!!!!!
 * GPIO 6 (SCK/CLK), GPIO 7 (SDO/SD0), GPIO 8 (SDI/SD1), GPIO 9 (SHD/SD2), GPIO 10 (SWP/SD3), GPIO 11 (CSC/CMD)
 */
 #define FAN1_RPM_PIN 25

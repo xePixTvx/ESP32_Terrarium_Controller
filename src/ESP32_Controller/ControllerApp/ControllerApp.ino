@@ -6,7 +6,6 @@
 
 //LAST WORKED ON: GUI Light Settings Menu --- Config stuff needs to work first!!!!!
 //                Config Controller ------ Read File Stuff
-//LIGHT & HEATER STUFF ------ RESOLDER to other GPIO PINS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
@@ -19,7 +18,7 @@
 *                   Controller Temp Sensor                  -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium SHT Temp & Humidity Sensor    -------------------------------- DONE ------- WORKS YAY
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
-*                   Terrarium Light & Heater                -------------------------------- WIP --- ACTUAL ELECTRIC STUFF IS WIP(NEEDS RESOLDER)
+*                   Terrarium Light & Heater                -------------------------------- DONE ------- WORKS YAY
 *                   RTC(DS3231)                             -------------------------------- DONE ------- WORKS YAY
 *                   Config/Settings using LittleFS          -------------------------------- WIP
 */
@@ -413,15 +412,19 @@ static void main_button_event_cb(lv_event_t* e)
             }
             else if (btn == objects.menu_dev_opt_light_on)
             {
+                LightHeaterController.SetLight(true);
             }
             else if (btn == objects.menu_dev_opt_light_off)
             {
+                LightHeaterController.SetLight(false);
             }
             else if (btn == objects.menu_dev_opt_heater_on)
             {
+                LightHeaterController.SetHeater(true);
             }
             else if (btn == objects.menu_dev_opt_heater_off)
             {
+                LightHeaterController.SetHeater(false);
             }
         }
     }

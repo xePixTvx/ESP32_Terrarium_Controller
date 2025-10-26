@@ -123,11 +123,11 @@ PIN = GPIO14
 
 
 /********************************** LIGHT AND HEATER RELAIS
-LIGHT = GPIO6 -- YELLOW
-HEATER = GPIO7 -- WHITE
+LIGHT = GPIO32 -- YELLOW
+HEATER = GPIO33 -- WHITE
 ****************************************/
-#define LIGHT_RELAIS_SIGNAL_PIN 6	//RESOLDER to other GPIO
-#define HEATER_RELAIS_SIGNAL_PIN 7 //RESOLDER to other GPIO
+#define LIGHT_RELAIS_SIGNAL_PIN 32	//RESOLDER to other GPIO32
+#define HEATER_RELAIS_SIGNAL_PIN 33 //RESOLDER to other GPIO33
 
 
 //////////////////////// FAN PWM

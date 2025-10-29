@@ -4,8 +4,7 @@
  Author:	Mario
 */
 
-//LAST WORKED ON: GUI Light Settings Menu --- Config stuff needs to work first!!!!!
-//                Config Controller ------ Read File Stuff
+//LAST WORKED ON: Testing RELAIS
 
 
 
@@ -20,7 +19,7 @@
 *                   Terrarium Ground Humidity Sensor        -------------------------------- NOT STARTED
 *                   Terrarium Light & Heater                -------------------------------- DONE ------- WORKS YAY
 *                   RTC(DS3231)                             -------------------------------- DONE ------- WORKS YAY
-*                   Config/Settings using LittleFS          -------------------------------- WIP
+*                   Config/Settings using LittleFS          -------------------------------- DONE ------- WORKS YAY
 */
 #include "COMMON_DEFINES.h"
 
@@ -101,6 +100,12 @@ void setup()
     digitalWrite(SD_CARD_CS_PIN, HIGH); // SD card chips select, must use GPIO 5 (ESP32 SS)
     delay(200);
 
+    //Init Config Controller
+    ConfigController.Begin();
+    delay(200);
+    ConfigController.LoadConfig();
+    delay(200);
+
     #if DISABLE_UI_AND_TOUCH != true
         InitGui();
         delay(200);
@@ -108,10 +113,6 @@ void setup()
 
     //Init Clock Controller
     ClockCtrl.Begin();
-    delay(200);
-
-    //Init Config Controller
-    ConfigController.Begin();
     delay(200);
 
     //Create UpdaterTask
@@ -126,9 +127,11 @@ void setup()
     FanController.Begin();
     FanController.SetSpeedPercent(0, 0);
     FanController.SetSpeedPercent(1, 0);
+    delay(200);
 
     //Init Light & Heater Controller
     LightHeaterController.Begin();
+    delay(200);
 
     Serial.println("Setup Done!");
     delay(200);
@@ -323,6 +326,15 @@ static void main_button_event_cb(lv_event_t* e)
             }
             else if (btn == objects.menu_main_opt_light_settings)//Open Light Settings Menu
             {
+                //Set Rollers to Current On/Off Times
+                DateTime onTime = ConfigController.GetSetting_LightOnTime();
+                DateTime offTime = ConfigController.GetSetting_LightOffTime();
+                lv_roller_set_selected(objects.roller_lights_on_time_hour, (onTime.hour() - 1), true);
+                lv_roller_set_selected(objects.roller_lights_on_time_minute, (onTime.minute() - 1), true);
+                lv_roller_set_selected(objects.roller_lights_off_time_hour, (offTime.hour() - 1), true);
+                lv_roller_set_selected(objects.roller_lights_off_time_minute, (offTime.minute() - 1), true);
+                delay(20);
+
                 changeToNextScreen(SCREEN_ID_MENU_SETTINGS_LIGHT);
             }
         }
@@ -382,11 +394,12 @@ static void main_button_event_cb(lv_event_t* e)
                 uint32_t on_minute = lv_roller_get_selected(objects.roller_lights_on_time_minute) + 1;
                 uint32_t off_hour = lv_roller_get_selected(objects.roller_lights_off_time_hour) + 1;
                 uint32_t off_minute = lv_roller_get_selected(objects.roller_lights_off_time_minute) + 1;
-
-                String on_time_to_save = String(on_hour) + ":" + String(on_minute);
-                String off_time_to_save = String(off_hour) + ":" + String(off_minute);
-                //Serial.println(on_time_to_save);
-                //delay(200);
+                ConfigController.SetSetting_LightOnTime(on_hour, on_minute);
+                ConfigController.SetSetting_LightOffTime(off_hour, off_minute);
+                delay(20);
+                ConfigController.SaveConfig();
+                delay(20);
+                changeToPrevScreen(SCREEN_ID_MENU_MAIN);
             }
         }
 
